@@ -1,0 +1,40 @@
+
+model {
+
+# Priors
+alpha.psi ~ dnorm(0, 0.01)
+beta1.psi ~ dnorm(0, 0.01) # distEdge
+beta2.psi ~ dnorm(0, 0.01) # distWater
+beta3.psi ~ dnorm(0, 0.01) # elevation
+beta4.psi ~ dnorm(0, 0.01) # basalArea
+beta5.psi ~ dnorm(0, 0.01) # treeBurned
+alpha.p ~ dnorm(0, 0.01)
+#beta1.p ~ dnorm(0, 0.01)
+#beta2.p ~ dnorm(0, 0.01)
+#beta3.p ~ dnorm(0, 0.01)
+#beta4.p ~ dnorm(0, 0.01)
+
+# Likelihood
+# Ecological model for the partially observed true state
+for (i in 1:R) {
+   z[i] ~ dbern(psi[i])                # True occurrence z at site i
+   psi[i] <- 1 / (1 + exp(-lpsi.lim[i]))
+   lpsi.lim[i] <- min(999, max(-999, lpsi[i]))
+   lpsi[i] <- alpha.psi + beta1.psi*distEdge[i] + beta2.psi*distWater[i] + beta3.psi*elevation[i] + beta4.psi*basalArea[i] + beta5.psi*treeBurned[i]
+
+   # Observation model for the observations
+   for (j in 1:T) {
+      y[i,j] ~ dbern(mu.p[i,j])	# Detection-nondetection at i and j
+      mu.p[i,j] <- z[i] * p[i,j]
+      p[i,j] <- 1 / (1 + exp(-lp.lim[i,j]))
+      lp.lim[i,j] <- min(999, max(-999, lp[i,j]))
+      #lp[i,j] <- alpha.p + beta1.p * DATES[i,j] + beta2.p * pow(DATES[i,j], 2) + beta3.p * HOURS[i,j] + beta4.p * pow(HOURS[i,j], 2)
+      lp[i,j] <- alpha.p
+      } #j
+   } #i
+
+# Derived quantities
+occ.fs <- sum(z[])                             # Number of occupied sites
+mean.p <- exp(alpha.p) / (1 + exp(alpha.p))    # Sort of average detection
+}
+
