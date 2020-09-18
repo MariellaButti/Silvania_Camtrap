@@ -15,10 +15,10 @@ library(here)
 
 
 ## ----Source this file--------
-source(here("silvania-temporario", "camera trap analysis code-WILDID-09-20-17.R"))
+source(here("silvania", "camera trap analysis code-WILDID-09-20-17.R"))
 
 ## ----Load data from Floresta Nacional de Silvania -------
-silvania <- f.readin.fix.data(here("silvania-temporario", "Wild_ID_silvania.csv"))
+silvania <- f.readin.fix.data(here("silvania", "Wild_ID_silvania.csv"))
 
 # How many rows and columns?
 dim(silvania)
